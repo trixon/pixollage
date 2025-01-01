@@ -15,6 +15,7 @@
  */
 package se.trixon.pixollage.collage;
 
+import java.io.IOException;
 import se.trixon.pixollage.ui.CollageTopComponent;
 
 /**
@@ -36,6 +37,10 @@ public class Collage {
 
     public String getName() {
         return mName;
+    }
+
+    public void save() throws IOException {
+        System.out.println("SAVE " + mName);
     }
 
     public void setName(String name) {

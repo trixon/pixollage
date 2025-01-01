@@ -15,8 +15,11 @@
  */
 package se.trixon.pixollage.ui;
 
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import org.netbeans.api.settings.ConvertAsProperties;
-import org.openide.util.lookup.Lookups;
+import org.openide.util.lookup.AbstractLookup;
+import org.openide.util.lookup.InstanceContent;
 import org.openide.windows.TopComponent;
 import se.trixon.pixollage.collage.Collage;
 
@@ -36,13 +39,46 @@ public final class CollageTopComponent extends TopComponent {
 
     private static int sDocumentCounter;
     private final Collage mCollage = new Collage(this);
+    private final InstanceContent mInstanceContent = new InstanceContent();
 
     public CollageTopComponent() {
         initComponents();
         var name = "%s #%d".formatted("Collage", ++sDocumentCounter);
         setName(name);
         mCollage.setName(name);
-        associateLookup(Lookups.singleton(mCollage));
+        associateLookup(new AbstractLookup(mInstanceContent));
+        mInstanceContent.add(mCollage);
+
+        textField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                modify();
+            }
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                modify();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                modify();
+            }
+        });
+    }
+
+    public Collage getCollage() {
+        return mCollage;
+    }
+
+    public InstanceContent getInstanceContent() {
+        return mInstanceContent;
+    }
+
+    void modify() {
+        if (getLookup().lookup(CollageSavable.class) == null) {
+            mInstanceContent.add(new CollageSavable(CollageTopComponent.this));
+        }
     }
 
     /**
@@ -53,19 +89,28 @@ public final class CollageTopComponent extends TopComponent {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        textField = new javax.swing.JTextField();
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 650, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(textField, javax.swing.GroupLayout.DEFAULT_SIZE, 638, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 366, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(textField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(324, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField textField;
     // End of variables declaration//GEN-END:variables
     @Override
     public void componentOpened() {
