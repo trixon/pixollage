@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2025 Patrik Karlström <patrik@trixon.se>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,12 +16,12 @@
 package se.trixon.pixollage.actions;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
+import se.trixon.pixollage.collage.Collage;
 
 @ActionID(
         category = "Collage",
@@ -35,11 +35,14 @@ import org.openide.util.NbBundle.Messages;
     @ActionReference(path = "Shortcuts", name = "D-E")
 })
 @Messages("CTL_RenderAction=Export")
-public final class RenderAction implements ActionListener {
+public final class RenderAction extends BaseCollageAction {
+
+    public RenderAction(Collage context) {
+        mContext = context;
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // TODO implement action body
-        System.out.println(getClass().getSimpleName());
+        mContext.showRenderDialog();
     }
 }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2025 Patrik Karlström <patrik@trixon.se>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,9 @@
 package se.trixon.pixollage.ui;
 
 import org.netbeans.api.settings.ConvertAsProperties;
+import org.openide.util.lookup.Lookups;
 import org.openide.windows.TopComponent;
+import se.trixon.pixollage.collage.Collage;
 
 /**
  * Top component which displays something.
@@ -33,10 +35,14 @@ import org.openide.windows.TopComponent;
 public final class CollageTopComponent extends TopComponent {
 
     private static int sDocumentCounter;
+    private final Collage mCollage = new Collage(this);
 
     public CollageTopComponent() {
         initComponents();
-        setName("%s #%d".formatted("Collage", ++sDocumentCounter));
+        var name = "%s #%d".formatted("Collage", ++sDocumentCounter);
+        setName(name);
+        mCollage.setName(name);
+        associateLookup(Lookups.singleton(mCollage));
     }
 
     /**
@@ -63,12 +69,12 @@ public final class CollageTopComponent extends TopComponent {
     // End of variables declaration//GEN-END:variables
     @Override
     public void componentOpened() {
-        // TODO add custom code on component opening
+        // TODO showAddImageDialog custom code on component opening
     }
 
     @Override
     public void componentClosed() {
-        // TODO add custom code on component closing
+        // TODO showAddImageDialog custom code on component closing
     }
 
     void writeProperties(java.util.Properties p) {
