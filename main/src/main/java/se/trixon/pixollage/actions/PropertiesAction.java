@@ -18,27 +18,28 @@ package se.trixon.pixollage.actions;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import org.openide.awt.ActionID;
-import se.trixon.almond.nbp.core.ModuleHelper;
-import se.trixon.almond.nbp.dialogs.NbAbout;
-import se.trixon.almond.util.PomInfo;
-import se.trixon.almond.util.SystemHelper;
-import se.trixon.almond.util.swing.AboutModel;
-import se.trixon.pixollage.Pixollage;
+import org.openide.awt.ActionReference;
+import org.openide.awt.ActionReferences;
+import org.openide.awt.ActionRegistration;
+import org.openide.util.NbBundle.Messages;
 
 @ActionID(
-        category = "Help",
-        id = "se.trixon.pixollage.actions.AboutAction"
+        category = "Collage",
+        id = "se.trixon.pixollage.actions.PropertiesAction"
 )
-public final class AboutAction implements ActionListener {
+@ActionRegistration(
+        displayName = "#CTL_PropertiesAction"
+)
+@ActionReferences({
+    @ActionReference(path = "Menu/Collage", position = 600, separatorBefore = 400, separatorAfter = 800),
+    @ActionReference(path = "Shortcuts", name = "D-P")
+})
+@Messages("CTL_PropertiesAction=Properties")
+public final class PropertiesAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        var c = Pixollage.class;
-        var pomInfo = new PomInfo(c, "se.trixon.pixollage", "main");
-        var aboutModel = new AboutModel(SystemHelper.getBundle(c, "about"), SystemHelper.getResourceAsImageIcon(c, "logo.png"));
-        aboutModel.setAppDate(ModuleHelper.getBuildTime(c));
-        aboutModel.setAppVersion(pomInfo.getVersion());
-
-        new NbAbout(aboutModel).display();
+        // TODO implement action body
+        System.out.println(getClass().getSimpleName());
     }
 }
