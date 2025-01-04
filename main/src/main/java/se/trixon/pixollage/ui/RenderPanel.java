@@ -24,6 +24,8 @@ import se.trixon.pixollage.collage.CollageProperties;
  */
 public class RenderPanel extends javax.swing.JPanel {
 
+    private boolean mEnabledHeightAdjust = true;
+    private boolean mEnabledWidthAdjust = true;
     private CollageProperties mProperties;
 
     /**
@@ -40,9 +42,8 @@ public class RenderPanel extends javax.swing.JPanel {
     public void load(CollageProperties properties) {
         mProperties = properties;
 
-        widthSpinner.setValue(mProperties.getRenderWidth());
-        mProperties.calculateRenderHeight();
-        heightSpinner.setValue(mProperties.getRenderHeight());
+        widthSpinner.setValue(mProperties.getRenderWidth() + 1);
+        widthSpinner.setValue(mProperties.getRenderWidth() - 1);
 
         if (mProperties.getRenderPath() != null) {
             fileChooserPanel.setPath(mProperties.getRenderPath().getAbsolutePath());
@@ -139,17 +140,26 @@ public class RenderPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void widthSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_widthSpinnerStateChanged
-        System.out.println("widthSpinnerStateChanged");
+        if (!mEnabledWidthAdjust) {
+            return;
+        }
         mProperties.setRenderWidth((int) widthSpinner.getValue());
         mProperties.calculateRenderHeight();
+        mEnabledHeightAdjust = false;
         heightSpinner.setValue(mProperties.getRenderHeight());
+        mEnabledHeightAdjust = true;
+
     }//GEN-LAST:event_widthSpinnerStateChanged
 
     private void heightSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_heightSpinnerStateChanged
-        System.out.println("heightSpinnerStateChanged");
+        if (!mEnabledHeightAdjust) {
+            return;
+        }
         mProperties.setRenderHeight((int) heightSpinner.getValue());
         mProperties.calculateRenderWidth();
+        mEnabledWidthAdjust = false;
         widthSpinner.setValue(mProperties.getRenderWidth());
+        mEnabledWidthAdjust = true;
     }//GEN-LAST:event_heightSpinnerStateChanged
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
