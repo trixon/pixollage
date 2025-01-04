@@ -16,7 +16,13 @@
 package se.trixon.pixollage.collage;
 
 import java.io.IOException;
+import javax.swing.border.EmptyBorder;
+import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
+import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.swing.SwingHelper;
 import se.trixon.pixollage.ui.CollageTopComponent;
+import se.trixon.pixollage.ui.PropertiesPanel;
 
 /**
  *
@@ -24,11 +30,14 @@ import se.trixon.pixollage.ui.CollageTopComponent;
  */
 public class Collage {
 
-    private String mName;
-    private final CollageTopComponent mTopComponent;
+    private transient String mName;
+    private final CollageProperties mProperties = new CollageProperties();
+    private transient final PropertiesPanel mPropertiesPanel = new PropertiesPanel();
+    private transient final CollageTopComponent mTopComponent;
 
     public Collage(CollageTopComponent tc) {
         mTopComponent = tc;
+        mPropertiesPanel.setBorder(new EmptyBorder(SwingHelper.getUIScaledInsets(8)));
     }
 
     public void clear() {
@@ -44,7 +53,7 @@ public class Collage {
     }
 
     public void setName(String name) {
-        this.mName = name;
+        mName = name;
     }
 
     public void showAddImageDialog() {
@@ -52,7 +61,20 @@ public class Collage {
     }
 
     public void showPropertiesDialog() {
-        System.out.println("Properties " + mName);
+        mPropertiesPanel.load(mProperties);
+
+        var d = new NotifyDescriptor(
+                mPropertiesPanel,
+                Dict.PROPERTIES.toString(),
+                NotifyDescriptor.OK_CANCEL_OPTION,
+                NotifyDescriptor.PLAIN_MESSAGE,
+                null,
+                null
+        );
+
+        if (DialogDisplayer.getDefault().notify(d) == NotifyDescriptor.OK_OPTION) {
+            mPropertiesPanel.apply(mProperties);
+        }
     }
 
     public void showRenderDialog() {

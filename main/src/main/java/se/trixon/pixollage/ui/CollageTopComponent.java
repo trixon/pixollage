@@ -33,7 +33,7 @@ import se.trixon.pixollage.collage.Collage;
 @TopComponent.Description(
         preferredID = "CollageTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE",
-        persistenceType = TopComponent.PERSISTENCE_NEVER
+        persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 public final class CollageTopComponent extends TopComponent {
 
@@ -90,26 +90,16 @@ public final class CollageTopComponent extends TopComponent {
     private void initComponents() {
 
         textField = new javax.swing.JTextField();
+        collagePanel = new se.trixon.pixollage.ui.CollagePanel();
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(textField, javax.swing.GroupLayout.DEFAULT_SIZE, 638, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(textField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(324, Short.MAX_VALUE))
-        );
+        setBackground(new java.awt.Color(255, 255, 153));
+        setLayout(new java.awt.BorderLayout());
+        add(textField, java.awt.BorderLayout.PAGE_START);
+        add(collagePanel, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private se.trixon.pixollage.ui.CollagePanel collagePanel;
     private javax.swing.JTextField textField;
     // End of variables declaration//GEN-END:variables
     @Override
