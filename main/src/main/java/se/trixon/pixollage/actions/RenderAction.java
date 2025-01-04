@@ -32,9 +32,9 @@ import se.trixon.pixollage.collage.Collage;
 )
 @ActionReferences({
     @ActionReference(path = "Menu/Collage", position = 1000),
-    @ActionReference(path = "Shortcuts", name = "D-E")
+    @ActionReference(path = "Shortcuts", name = "D-ENTER")
 })
-@Messages("CTL_RenderAction=Export")
+@Messages("CTL_RenderAction=Render...")
 public final class RenderAction extends BaseCollageAction {
 
     public RenderAction(Collage context) {

@@ -32,9 +32,9 @@ import se.trixon.pixollage.collage.Collage;
 )
 @ActionReferences({
     @ActionReference(path = "Menu/Collage", position = 600, separatorBefore = 400, separatorAfter = 800),
-    @ActionReference(path = "Shortcuts", name = "D-P")
+    @ActionReference(path = "Shortcuts", name = "A-ENTER")
 })
-@Messages("CTL_PropertiesAction=Properties")
+@Messages("CTL_PropertiesAction=Properties...")
 public final class PropertiesAction extends BaseCollageAction {
 
     public PropertiesAction(Collage context) {

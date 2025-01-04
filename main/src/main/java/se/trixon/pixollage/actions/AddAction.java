@@ -32,9 +32,9 @@ import se.trixon.pixollage.collage.Collage;
 )
 @ActionReferences({
     @ActionReference(path = "Menu/Collage", position = 100),
-    @ActionReference(path = "Shortcuts", name = "D-PLUS")
+    @ActionReference(path = "Shortcuts", name = "D-INSERT")
 })
-@Messages("CTL_AddAction=Add image(s)")
+@Messages("CTL_AddAction=Add image(s)...")
 public final class AddAction extends BaseCollageAction {
 
     public AddAction(Collage context) {

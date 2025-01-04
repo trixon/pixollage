@@ -68,6 +68,12 @@ limitations under the License.
         <file name="S-F4.shadow">
             <attr name="originalFile" stringvalue="Actions/Window/org-netbeans-core-windows-actions-DocumentsAction.instance"/>
         </file>
+        <file name="F11.shadow">
+            <attr name="originalFile" stringvalue="Actions/Window/org-netbeans-core-windows-actions-ToggleFullScreenAction.instance"/>
+        </file>
+        <file name="F12.shadow">
+            <attr name="originalFile" stringvalue="Actions/Window/org-netbeans-core-windows-actions-ShowEditorOnlyAction.instance"/>
+        </file>
         <file name="D-S.shadow">
             <attr name="originalFile" stringvalue="Actions/System/org-openide-actions-SaveAction.instance"/>
         </file>

@@ -43,13 +43,13 @@ public class PropertiesPanel extends javax.swing.JPanel {
     public void apply(CollageProperties properties) {
         properties.setBorderSize((double) borderSpinner.getValue());
         properties.setBorderColor(Color.yellow);
-        properties.setHeight((int) heightSpinner.getValue());
-        properties.setWidth((int) widthSpinner.getValue());
+        properties.setAspectRatioHeight((int) heightSpinner.getValue());
+        properties.setAspectRatioWidth((int) widthSpinner.getValue());
     }
 
     public void load(CollageProperties properties) {
-        heightSpinner.setValue(properties.getHeight());
-        widthSpinner.setValue(properties.getWidth());
+        heightSpinner.setValue(properties.getAspectRatioHeight());
+        widthSpinner.setValue(properties.getAspectRatioWidth());
         borderSpinner.setValue(properties.getBorderSize());
         borderColorPanel.setColor(properties.getBorderColor());
     }

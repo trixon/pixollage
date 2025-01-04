@@ -16,6 +16,7 @@
 package se.trixon.pixollage.collage;
 
 import java.awt.Color;
+import java.io.File;
 import se.trixon.pixollage.Options;
 import static se.trixon.pixollage.Options.*;
 
@@ -26,12 +27,35 @@ import static se.trixon.pixollage.Options.*;
 public class CollageProperties {
 
     public static final Options OPTIONS = Options.getInstance();
+    private int mAspectRatioHeight = OPTIONS.getInt(KEY_HEIGHT, DEFAULT_HEIGHT);
+    private int mAspectRatioWidth = OPTIONS.getInt(KEY_WIDTH, DEFAULT_WIDTH);
     private Color mBorderColor = Color.decode(OPTIONS.get(KEY_BORDER_COLOR, DEFAULT_BORDER_COLOR));
     private double mBorderSize = OPTIONS.getDouble(KEY_BORDER_SIZE, DEFAULT_BORDER_SIZE);
-    private int mHeight = OPTIONS.getInt(KEY_HEIGHT, DEFAULT_HEIGHT);
-    private int mWidth = OPTIONS.getInt(KEY_WIDTH, DEFAULT_WIDTH);
+    private int mRenderHeight = 1600;
+    private File mRenderPath;
+    private int mRenderWidth = 1920;
 
     public CollageProperties() {
+    }
+
+    public void calculateRenderHeight() {
+        mRenderHeight = (int) Math.round(mRenderWidth / getAspectRatio());
+    }
+
+    public void calculateRenderWidth() {
+        mRenderWidth = (int) Math.round(mRenderHeight * getAspectRatio());
+    }
+
+    public double getAspectRatio() {
+        return mAspectRatioWidth / (double) mAspectRatioHeight;
+    }
+
+    public int getAspectRatioHeight() {
+        return mAspectRatioHeight;
+    }
+
+    public int getAspectRatioWidth() {
+        return mAspectRatioWidth;
     }
 
     public Color getBorderColor() {
@@ -42,16 +66,24 @@ public class CollageProperties {
         return mBorderSize;
     }
 
-    public int getHeight() {
-        return mHeight;
+    public int getRenderHeight() {
+        return mRenderHeight;
     }
 
-    public double getRatio() {
-        return mHeight / mWidth;
+    public File getRenderPath() {
+        return mRenderPath;
     }
 
-    public int getWidth() {
-        return mWidth;
+    public int getRenderWidth() {
+        return mRenderWidth;
+    }
+
+    public void setAspectRatioHeight(int aspectRatioHeight) {
+        mAspectRatioHeight = aspectRatioHeight;
+    }
+
+    public void setAspectRatioWidth(int aspectRatioWidth) {
+        mAspectRatioWidth = aspectRatioWidth;
     }
 
     public void setBorderColor(Color borderColor) {
@@ -62,12 +94,16 @@ public class CollageProperties {
         mBorderSize = borderSize;
     }
 
-    public void setHeight(int height) {
-        mHeight = height;
+    public void setRenderHeight(int renderHeight) {
+        mRenderHeight = renderHeight;
     }
 
-    public void setWidth(int width) {
-        mWidth = width;
+    public void setRenderPath(File renderPath) {
+        mRenderPath = renderPath;
+    }
+
+    public void setRenderWidth(int renderWidth) {
+        mRenderWidth = renderWidth;
     }
 
 }

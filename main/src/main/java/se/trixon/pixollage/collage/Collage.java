@@ -23,6 +23,7 @@ import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.swing.SwingHelper;
 import se.trixon.pixollage.ui.CollageTopComponent;
 import se.trixon.pixollage.ui.PropertiesPanel;
+import se.trixon.pixollage.ui.RenderPanel;
 
 /**
  *
@@ -34,6 +35,7 @@ public class Collage {
     private final CollageProperties mProperties = new CollageProperties();
     private transient final PropertiesPanel mPropertiesPanel = new PropertiesPanel();
     private transient final CollageTopComponent mTopComponent;
+    private transient final RenderPanel mRenderPanel = new RenderPanel();
 
     public Collage(CollageTopComponent tc) {
         mTopComponent = tc;
@@ -78,6 +80,21 @@ public class Collage {
     }
 
     public void showRenderDialog() {
-        System.out.println("Render " + mName);
+        mRenderPanel.load(mProperties);
+
+        var d = new NotifyDescriptor(
+                mRenderPanel,
+                Dict.RENDER.toString(),
+                NotifyDescriptor.OK_CANCEL_OPTION,
+                NotifyDescriptor.PLAIN_MESSAGE,
+                new String[]{Dict.CANCEL.toString(), Dict.RENDER.toString()},
+                Dict.RENDER.toString()
+        );
+
+        if (DialogDisplayer.getDefault().notify(d) == Dict.RENDER.toString()) {
+            mRenderPanel.apply(mProperties);
+            System.out.println("TODO: Save document and the actual rendering");
+        }
+
     }
 }
