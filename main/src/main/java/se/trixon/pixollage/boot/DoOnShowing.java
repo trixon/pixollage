@@ -21,7 +21,9 @@ import org.openide.awt.Actions;
 import org.openide.awt.HtmlBrowser;
 import org.openide.util.Exceptions;
 import org.openide.windows.OnShowing;
+import org.openide.windows.WindowManager;
 import se.trixon.almond.util.SystemHelper;
+import se.trixon.almond.util.swing.SwingHelper;
 
 /**
  *
@@ -40,6 +42,13 @@ public class DoOnShowing implements Runnable {
             }
         });
 
-        Actions.forID("File", "se.trixon.pixollage.actions.NewAction").actionPerformed(null);
+        SwingHelper.runLaterDelayed(10, () -> {
+            var windowManager = WindowManager.getDefault();
+            var editorMode = windowManager.findMode("editor");
+
+            if (windowManager.getOpenedTopComponents(editorMode).length == 0) {
+                Actions.forID("File", "se.trixon.pixollage.actions.NewAction").actionPerformed(null);
+            }
+        });
     }
 }

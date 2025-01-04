@@ -33,7 +33,7 @@ import se.trixon.pixollage.collage.Collage;
 @TopComponent.Description(
         preferredID = "CollageTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE",
-        persistenceType = TopComponent.PERSISTENCE_ALWAYS
+        persistenceType = TopComponent.PERSISTENCE_ONLY_OPENED
 )
 public final class CollageTopComponent extends TopComponent {
 
