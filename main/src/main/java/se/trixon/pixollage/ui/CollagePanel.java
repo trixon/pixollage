@@ -15,10 +15,12 @@
  */
 package se.trixon.pixollage.ui;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GridBagLayout;
-import javax.swing.JPanel;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import se.trixon.almond.util.swing.SwingHelper;
+import se.trixon.pixollage.Options;
+import se.trixon.pixollage.collage.Collage;
 
 /**
  *
@@ -26,21 +28,56 @@ import javax.swing.JPanel;
  */
 public class CollagePanel extends javax.swing.JPanel {
 
+    private BufferedImage mBufferedImage;
+    private Collage mCollage;
+    private final Options mOptions = Options.getInstance();
+
     /**
      * Creates new form CollagePanel
      */
     public CollagePanel() {
         initComponents();
-        createUI();
     }
 
-    private void createUI() {
-        var layout = new GridBagLayout();
-        var panel = new JPanel();
-        panel.setOpaque(true);
-        panel.setBackground(Color.red);
-        panel.setPreferredSize(new Dimension(600, 400));
-        add(panel, new java.awt.GridBagConstraints());
+    @Override
+    public void paint(Graphics g) {
+        super.paint(g);
+        if (mBufferedImage == null) {
+            return;
+        }
+
+        var g2 = (Graphics2D) g;
+        int x = (getWidth() - mBufferedImage.getWidth()) / 2;
+        int y = (getHeight() - mBufferedImage.getHeight()) / 2;
+        g2.drawImage(mBufferedImage, x, y, null);
+    }
+
+    void load(Collage collage) {
+        mCollage = collage;
+        var node = mOptions.getPreferences().node(mCollage.getProperties().getId().toString());
+        node.addPreferenceChangeListener(pce -> {
+            updatePreview();
+        });
+    }
+
+    private void updatePreview() {
+        var p = mCollage.getProperties();
+        var margin = SwingHelper.getUIScaled(40);
+
+        var w = getSize().width - margin;
+        var h = getSize().height - margin;
+
+        var ww = w;
+        var hh = (int) (w / p.getAspectRatio());
+        if (hh > h) {
+            hh = h;
+            ww = (int) (h * p.getAspectRatio());
+        }
+
+        mBufferedImage = mCollage.generateImage(ww, hh);
+
+        repaint();
+        revalidate();
     }
 
     /**
@@ -52,9 +89,17 @@ public class CollagePanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        setBackground(new java.awt.Color(255, 255, 153));
-        setLayout(new java.awt.GridBagLayout());
+        setBackground(new java.awt.Color(102, 102, 102));
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentResized(java.awt.event.ComponentEvent evt) {
+                formComponentResized(evt);
+            }
+        });
     }// </editor-fold>//GEN-END:initComponents
+
+    private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
+        updatePreview();
+    }//GEN-LAST:event_formComponentResized
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables

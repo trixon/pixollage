@@ -46,6 +46,7 @@ public final class CollageTopComponent extends TopComponent {
         var name = "%s #%d".formatted("Collage", ++sDocumentCounter);
         setName(name);
         mCollage.setName(name);
+        collagePanel.load(mCollage);
         associateLookup(new AbstractLookup(mInstanceContent));
         mInstanceContent.add(mCollage);
 
@@ -95,6 +96,8 @@ public final class CollageTopComponent extends TopComponent {
         setBackground(new java.awt.Color(255, 255, 153));
         setLayout(new java.awt.BorderLayout());
         add(textField, java.awt.BorderLayout.PAGE_START);
+
+        collagePanel.setLayout(null);
         add(collagePanel, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 

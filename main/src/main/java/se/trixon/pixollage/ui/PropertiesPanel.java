@@ -15,7 +15,6 @@
  */
 package se.trixon.pixollage.ui;
 
-import java.awt.Color;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GraphicsHelper;
 import se.trixon.pixollage.Options;
@@ -28,7 +27,7 @@ import se.trixon.pixollage.collage.CollageProperties;
  */
 public class PropertiesPanel extends javax.swing.JPanel {
 
-    private Options mOptions = Options.getInstance();
+    private final Options mOptions = Options.getInstance();
 
     /**
      * Creates new form CollagePropertiesPanel
@@ -41,10 +40,18 @@ public class PropertiesPanel extends javax.swing.JPanel {
     }
 
     public void apply(CollageProperties properties) {
-        properties.setBorderSize((double) borderSpinner.getValue());
-        properties.setBorderColor(Color.yellow);
-        properties.setAspectRatioHeight((int) heightSpinner.getValue());
-        properties.setAspectRatioWidth((int) widthSpinner.getValue());
+        var borderSize = (double) borderSpinner.getValue();
+        var borderColor = borderColorPanel.getColor();
+        var ratioHeight = (int) heightSpinner.getValue();
+        var ratioWidth = (int) widthSpinner.getValue();
+
+        properties.setBorderSize(borderSize);
+        properties.setBorderColor(borderColor);
+        properties.setAspectRatioHeight(ratioHeight);
+        properties.setAspectRatioWidth(ratioWidth);
+
+        var node = mOptions.getPreferences().node(properties.getId().toString());
+        node.putLong("lastChanged", System.currentTimeMillis());
     }
 
     public void load(CollageProperties properties) {

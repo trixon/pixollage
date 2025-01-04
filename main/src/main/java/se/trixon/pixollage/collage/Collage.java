@@ -15,6 +15,7 @@
  */
 package se.trixon.pixollage.collage;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.swing.border.EmptyBorder;
 import org.openide.DialogDisplayer;
@@ -34,8 +35,8 @@ public class Collage {
     private transient String mName;
     private final CollageProperties mProperties = new CollageProperties();
     private transient final PropertiesPanel mPropertiesPanel = new PropertiesPanel();
-    private transient final CollageTopComponent mTopComponent;
     private transient final RenderPanel mRenderPanel = new RenderPanel();
+    private transient final CollageTopComponent mTopComponent;
 
     public Collage(CollageTopComponent tc) {
         mTopComponent = tc;
@@ -46,8 +47,24 @@ public class Collage {
         System.out.println("Clearing " + mName);
     }
 
+    public BufferedImage generateImage(int w, int h) {
+        var image = new BufferedImage(w, h, BufferedImage.TYPE_3BYTE_BGR);
+        var g2 = image.createGraphics();
+        g2.setPaint(mProperties.getBorderColor());
+        g2.fillRect(0, 0, w, h);
+
+        //TODO Add tiles...
+        g2.dispose();
+
+        return image;
+    }
+
     public String getName() {
         return mName;
+    }
+
+    public CollageProperties getProperties() {
+        return mProperties;
     }
 
     public void save() throws IOException {

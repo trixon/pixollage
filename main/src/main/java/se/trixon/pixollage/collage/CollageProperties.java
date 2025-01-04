@@ -17,6 +17,7 @@ package se.trixon.pixollage.collage;
 
 import java.awt.Color;
 import java.io.File;
+import java.util.UUID;
 import se.trixon.pixollage.Options;
 import static se.trixon.pixollage.Options.*;
 
@@ -31,6 +32,7 @@ public class CollageProperties {
     private int mAspectRatioWidth = OPTIONS.getInt(KEY_WIDTH, DEFAULT_WIDTH);
     private Color mBorderColor = Color.decode(OPTIONS.get(KEY_BORDER_COLOR, DEFAULT_BORDER_COLOR));
     private double mBorderSize = OPTIONS.getDouble(KEY_BORDER_SIZE, DEFAULT_BORDER_SIZE);
+    private UUID mId = UUID.randomUUID();
     private int mRenderHeight = 1600;
     private File mRenderPath;
     private int mRenderWidth = 1920;
@@ -64,6 +66,10 @@ public class CollageProperties {
 
     public double getBorderSize() {
         return mBorderSize;
+    }
+
+    public UUID getId() {
+        return mId;
     }
 
     public int getRenderHeight() {
