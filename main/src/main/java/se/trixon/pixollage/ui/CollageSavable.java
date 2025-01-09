@@ -17,9 +17,14 @@ package se.trixon.pixollage.ui;
 
 import java.io.IOException;
 import org.netbeans.spi.actions.AbstractSavable;
+import org.openide.filesystems.FileChooserBuilder;
+import org.openide.filesystems.FileObject;
+import org.openide.loaders.SaveAsCapable;
+import se.trixon.almond.nbp.Almond;
+import se.trixon.almond.nbp.FileChooserHelper;
 import se.trixon.pixollage.collage.Collage;
 
-class CollageSavable extends AbstractSavable {
+class CollageSavable extends AbstractSavable implements SaveAsCapable {
 
     private final CollageTopComponent tc;
 
@@ -43,13 +48,28 @@ class CollageSavable extends AbstractSavable {
     }
 
     @Override
+    public void saveAs(FileObject fileObject, String name) throws IOException {
+        System.out.println("TODO SaveAs");
+        System.out.println(fileObject.getPath());
+        System.out.println(name);
+        tc.getInstanceContent().remove(this);
+    }
+
+    @Override
     protected String findDisplayName() {
         return getCollage().getName();
     }
 
     @Override
     protected void handleSave() throws IOException {
-        getCollage().save();
+//        var file = new FileChooserBuilder(getCollage().getProperties().getId().toString())
+        var file = new FileChooserBuilder(getClass())
+                .setFileHiding(true)
+                .setSelectionApprover(FileChooserHelper.getFileExistSelectionApprover(Almond.getFrame()))
+                .showSaveDialog();
+        if (file != null) {
+            getCollage().save(file);
+        }
         tc.getInstanceContent().remove(this);
     }
 

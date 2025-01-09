@@ -15,13 +15,17 @@
  */
 package se.trixon.pixollage.collage;
 
+import com.google.gson.annotations.SerializedName;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import javax.swing.border.EmptyBorder;
+import org.apache.commons.io.FileUtils;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.swing.SwingHelper;
+import se.trixon.pixollage.Pixollage;
 import se.trixon.pixollage.ui.CollageTopComponent;
 import se.trixon.pixollage.ui.PropertiesPanel;
 import se.trixon.pixollage.ui.RenderPanel;
@@ -33,6 +37,7 @@ import se.trixon.pixollage.ui.RenderPanel;
 public class Collage {
 
     private transient String mName;
+    @SerializedName("header")
     private final CollageProperties mProperties = new CollageProperties();
     private transient final PropertiesPanel mPropertiesPanel = new PropertiesPanel();
     private transient final RenderPanel mRenderPanel = new RenderPanel();
@@ -67,8 +72,8 @@ public class Collage {
         return mProperties;
     }
 
-    public void save() throws IOException {
-        System.out.println("SAVE " + mName);
+    public void save(File file) throws IOException {
+        FileUtils.write(file, Pixollage.GSON.toJson(this), "utf-8");
     }
 
     public void setName(String name) {

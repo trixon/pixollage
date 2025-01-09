@@ -43,10 +43,17 @@ limitations under the License.
         </folder>
         <folder name="File">
             <file name="Separator4.instance_hidden"/>
+            <file name="org-netbeans-modules-openfile-OpenFileAction.shadow_hidden"/>
             <file name="org-openide-actions-PageSetupAction.shadow_hidden"/>
             <file name="org-openide-actions-PrintAction.shadow_hidden"/>
         </folder>
         <file name="GoTo_hidden"/>
+        <folder name="Help">
+            <file name="Separator1.instance_hidden"/>
+            <file name="netbeans-kb.url_hidden"/>
+            <file name="org-netbeans-modules-utilities-ReportNBIssueAction.shadow_hidden"/>
+            <file name="shortcuts.xml_hidden"/>
+        </folder>
         <folder name="View">
             <file name="org-netbeans-core-windows-actions-ToolbarsListAction.shadow_hidden"/>
         </folder>

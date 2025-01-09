@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2025 Patrik Karlström <patrik@trixon.se>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,13 @@
  */
 package se.trixon.pixollage;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import java.awt.Color;
+import java.io.File;
 import se.trixon.almond.util.GlobalState;
+import se.trixon.almond.util.gson_adapter.AwtColorAdapter;
+import se.trixon.almond.util.gson_adapter.FileAdapter;
 import se.trixon.almond.util.swing.SwingHelper;
 
 /**
@@ -24,6 +30,13 @@ import se.trixon.almond.util.swing.SwingHelper;
  */
 public class Pixollage {
 
+    public static final Gson GSON = new GsonBuilder()
+            .setVersion(1.0)
+            .serializeNulls()
+            .setPrettyPrinting()
+            .registerTypeAdapter(Color.class, new AwtColorAdapter())
+            .registerTypeAdapter(File.class, new FileAdapter())
+            .create();
     public static final int ICON_SIZE_TOOLBAR = 32;
 
     private static final GlobalState sGlobalState = new GlobalState();

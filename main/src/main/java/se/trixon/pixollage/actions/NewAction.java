@@ -32,7 +32,7 @@ import se.trixon.pixollage.ui.CollageTopComponent;
         displayName = "#CTL_NewAction"
 )
 @ActionReferences({
-    @ActionReference(path = "Menu/File", position = 1300, separatorAfter = 1350),
+    @ActionReference(path = "Menu/File", position = 10, separatorAfter = 11),
     @ActionReference(path = "Shortcuts", name = "D-N")
 })
 @Messages("CTL_NewAction=New")

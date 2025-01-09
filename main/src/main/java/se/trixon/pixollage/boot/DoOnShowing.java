@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright 2025 Patrik Karlström <patrik@trixon.se>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,11 +17,13 @@ package se.trixon.pixollage.boot;
 
 import java.net.MalformedURLException;
 import java.net.URI;
+import javax.swing.JFrame;
 import org.openide.awt.Actions;
 import org.openide.awt.HtmlBrowser;
 import org.openide.util.Exceptions;
 import org.openide.windows.OnShowing;
 import org.openide.windows.WindowManager;
+import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.swing.SwingHelper;
 
@@ -44,6 +46,7 @@ public class DoOnShowing implements Runnable {
 
         SwingHelper.runLaterDelayed(10, () -> {
             var windowManager = WindowManager.getDefault();
+            Almond.setFrame((JFrame) windowManager.getMainWindow());
             var editorMode = windowManager.findMode("editor");
 
             if (windowManager.getOpenedTopComponents(editorMode).length == 0) {

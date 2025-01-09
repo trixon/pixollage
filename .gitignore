@@ -25,3 +25,4 @@ replay_pid*
 /application/target/
 /branding/target/
 /main/target/
+/target/
