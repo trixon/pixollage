@@ -18,7 +18,6 @@ package se.trixon.pixollage.actions;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -28,6 +27,11 @@ import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.util.Exceptions;
 import org.openide.util.NbBundle.Messages;
+import org.openide.windows.WindowManager;
+import se.trixon.pixollage.Pixollage;
+import se.trixon.pixollage.PxlDataObject;
+import se.trixon.pixollage.collage.Collage;
+import se.trixon.pixollage.ui.CollageTopComponent;
 
 @ActionID(
         category = "File",
@@ -45,7 +49,26 @@ public final class OpenAction implements ActionListener {
 
     public static void open(FileObject fileObject) {
         try {
-            System.out.println(fileObject.asText("utf-8"));
+            var collage = Pixollage.GSON.fromJson(fileObject.asText("utf-8"), Collage.class);
+            collage.setFileObject(fileObject);
+
+            var windowManager = WindowManager.getDefault();
+
+            for (var mode : windowManager.getModes()) {
+                for (var topComponent : mode.getTopComponents()) {
+                    if (topComponent instanceof CollageTopComponent tc) {
+                        if (tc.getCollage().getProperties().getId().equals(collage.getProperties().getId())) {
+                            tc.requestAttention(true);
+                            tc.requestActive();
+                            return;
+                        }
+                    }
+                }
+            }
+
+            var tc = new CollageTopComponent(collage);
+            tc.open();
+            tc.requestActive();
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
         }
@@ -53,11 +76,10 @@ public final class OpenAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        var fileNameExtensionFilter = new FileNameExtensionFilter("Pixollage", "pxl", "PXL");
         var file = new FileChooserBuilder(getClass())
-                .addFileFilter(fileNameExtensionFilter)
+                .addFileFilter(PxlDataObject.FILE_NAME_EXTENSION_FILTER)
+                .setFileFilter(PxlDataObject.FILE_NAME_EXTENSION_FILTER)
                 .setControlButtonsAreShown(true)
-                .setFileFilter(fileNameExtensionFilter)
                 .setFileHiding(true)
                 .setFilesOnly(true)
                 .showOpenDialog();

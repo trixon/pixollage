@@ -17,26 +17,23 @@ package se.trixon.pixollage.ui;
 
 import java.io.IOException;
 import org.netbeans.spi.actions.AbstractSavable;
-import org.openide.filesystems.FileChooserBuilder;
-import org.openide.filesystems.FileObject;
-import org.openide.loaders.SaveAsCapable;
-import se.trixon.almond.nbp.Almond;
-import se.trixon.almond.nbp.FileChooserHelper;
+import se.trixon.almond.util.Dict;
+import se.trixon.pixollage.Pixollage;
 import se.trixon.pixollage.collage.Collage;
 
-class CollageSavable extends AbstractSavable implements SaveAsCapable {
+public class CollageSavable extends AbstractSavable {
 
-    private final CollageTopComponent tc;
+    private final CollageTopComponent mTopComponent;
 
-    CollageSavable(CollageTopComponent tc) {
-        this.tc = tc;
+    public CollageSavable(CollageTopComponent tc) {
+        mTopComponent = tc;
         register();
     }
 
     @Override
     public boolean equals(Object other) {
         if (other instanceof CollageSavable collageSavable) {
-            return this.tc == collageSavable.tc;
+            return this.mTopComponent == collageSavable.mTopComponent;
         }
 
         return false;
@@ -44,15 +41,11 @@ class CollageSavable extends AbstractSavable implements SaveAsCapable {
 
     @Override
     public int hashCode() {
-        return tc.hashCode();
+        return mTopComponent.hashCode();
     }
 
-    @Override
-    public void saveAs(FileObject fileObject, String name) throws IOException {
-        System.out.println("TODO SaveAs");
-        System.out.println(fileObject.getPath());
-        System.out.println(name);
-        tc.getInstanceContent().remove(this);
+    public void removeFromRegistry() {
+        unregister();
     }
 
     @Override
@@ -62,19 +55,18 @@ class CollageSavable extends AbstractSavable implements SaveAsCapable {
 
     @Override
     protected void handleSave() throws IOException {
-//        var file = new FileChooserBuilder(getCollage().getProperties().getId().toString())
-        var file = new FileChooserBuilder(getClass())
-                .setFileHiding(true)
-                .setSelectionApprover(FileChooserHelper.getFileExistSelectionApprover(Almond.getFrame()))
-                .showSaveDialog();
+        var file = getCollage().getFile();
+        if (file == null) {
+            file = Pixollage.requestFile(Dict.SAVE_AS.toString());
+        }
+
         if (file != null) {
             getCollage().save(file);
         }
-        tc.getInstanceContent().remove(this);
     }
 
     private Collage getCollage() {
-        return tc.getCollage();
+        return mTopComponent.getCollage();
     }
 
 }

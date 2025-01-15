@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2025 Patrik Karlström <patrik@trixon.se>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,12 +15,17 @@
  */
 package se.trixon.pixollage.ui;
 
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
+import java.io.File;
+import java.io.IOException;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.netbeans.api.settings.ConvertAsProperties;
+import org.openide.filesystems.FileUtil;
+import org.openide.util.Exceptions;
 import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 import org.openide.windows.TopComponent;
+import se.trixon.pixollage.Pixollage;
 import se.trixon.pixollage.collage.Collage;
 
 /**
@@ -37,35 +42,76 @@ import se.trixon.pixollage.collage.Collage;
 )
 public final class CollageTopComponent extends TopComponent {
 
-    private static int sDocumentCounter;
-    private final Collage mCollage = new Collage(this);
+    private Collage mCollage;
+    private CollageSavable mCollageSavable;
     private final InstanceContent mInstanceContent = new InstanceContent();
 
     public CollageTopComponent() {
         initComponents();
-        var name = "%s #%d".formatted("Collage", ++sDocumentCounter);
-        setName(name);
-        mCollage.setName(name);
-        collagePanel.load(mCollage);
-        associateLookup(new AbstractLookup(mInstanceContent));
+        mCollage = new Collage();
+        collageTopComponent();
+        modify();
+    }
+
+    public CollageTopComponent(Collage collage) {
+        initComponents();
+        mCollage = collage;
+        collageTopComponent();
+    }
+
+    @Override
+    public boolean canClose() {
+        boolean canClose;
+        if (getLookup().lookupAll(CollageSavable.class).stream().anyMatch(c -> c == mCollageSavable)) {
+            //TODO Display Save, Discard & Cancel dialog
+            //Loop?
+            canClose = false;
+        } else {
+            canClose = true;
+        }
+
+        if (canClose) {
+//            resetSavable();
+        }
+
+        return canClose;
+    }
+
+    public void collageTopComponent() {
+        mCollage.setTopComponent(this);
+        loadCollage();
+        try {
+            associateLookup(new AbstractLookup(mInstanceContent));
+        } catch (IllegalStateException e) {
+            //nvm - already set
+        }
         mInstanceContent.add(mCollage);
+    }
 
-        textField.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                modify();
-            }
+    @Override
+    public int getPersistenceType() {
+        if (mCollage.getFile() == null) {
+            return TopComponent.PERSISTENCE_NEVER;
+        } else {
+            return TopComponent.PERSISTENCE_ONLY_OPENED;
+        }
+    }
 
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                modify();
-            }
+    public void refreshNames() {
+        setName(mCollage.getName());
+        if (mCollage.getFileObject() != null) {
+            setToolTipText(mCollage.getFileObject().getPath());
+        }
+    }
 
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                modify();
-            }
-        });
+    public void resetSavable() {
+        getInstanceContent().remove(mCollageSavable);
+        mCollageSavable.removeFromRegistry();
+    }
+
+    private void loadCollage() {
+        refreshNames();
+        collagePanel.load(mCollage);
     }
 
     public Collage getCollage() {
@@ -76,9 +122,10 @@ public final class CollageTopComponent extends TopComponent {
         return mInstanceContent;
     }
 
-    void modify() {
+    public void modify() {
         if (getLookup().lookup(CollageSavable.class) == null) {
-            mInstanceContent.add(new CollageSavable(CollageTopComponent.this));
+            mCollageSavable = new CollageSavable(CollageTopComponent.this);
+            mInstanceContent.add(mCollageSavable);
         }
     }
 
@@ -90,12 +137,10 @@ public final class CollageTopComponent extends TopComponent {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        textField = new javax.swing.JTextField();
         collagePanel = new se.trixon.pixollage.ui.CollagePanel();
 
         setBackground(new java.awt.Color(255, 255, 153));
         setLayout(new java.awt.BorderLayout());
-        add(textField, java.awt.BorderLayout.PAGE_START);
 
         collagePanel.setLayout(null);
         add(collagePanel, java.awt.BorderLayout.CENTER);
@@ -103,7 +148,6 @@ public final class CollageTopComponent extends TopComponent {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private se.trixon.pixollage.ui.CollagePanel collagePanel;
-    private javax.swing.JTextField textField;
     // End of variables declaration//GEN-END:variables
     @Override
     public void componentOpened() {
@@ -112,7 +156,8 @@ public final class CollageTopComponent extends TopComponent {
 
     @Override
     public void componentClosed() {
-        // TODO showAddImageDialog custom code on component closing
+        System.out.println("componentClosed");
+//        resetSavable();
     }
 
     void writeProperties(java.util.Properties p) {
@@ -120,10 +165,33 @@ public final class CollageTopComponent extends TopComponent {
         // http://wiki.apidesign.org/wiki/PropertyFiles
         p.setProperty("version", "1.0");
         // TODO store your settings
+        var file = mCollage.getFile();
+        if (file != null) {
+            p.put("path", file.getAbsolutePath());
+        }
     }
 
     void readProperties(java.util.Properties p) {
         String version = p.getProperty("version");
         // TODO read your settings according to their version
+
+        String path = p.getProperty("path");
+
+        if (StringUtils.isNotBlank(path) && new File(path).isFile()) {
+            var file = new File(path);
+            try {
+                loadFromFile(file);
+            } catch (IOException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+        }
+    }
+
+    private void loadFromFile(File file) throws IOException {
+        mInstanceContent.remove(mCollage);
+        var fileObject = FileUtil.createData(file);
+        mCollage = Pixollage.GSON.fromJson(FileUtils.readFileToString(file, "utf-8"), Collage.class);
+        mCollage.setFileObject(fileObject);
+        collageTopComponent();
     }
 }

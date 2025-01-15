@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2025 Patrik Karlström <patrik@trixon.se>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,11 +39,16 @@ public class PropertiesPanel extends javax.swing.JPanel {
         borderColorPanel.setSize(borderSpinner.getSize());
     }
 
-    public void apply(CollageProperties properties) {
+    public boolean apply(CollageProperties properties) {
         var borderSize = (double) borderSpinner.getValue();
         var borderColor = borderColorPanel.getColor();
         var ratioHeight = (int) heightSpinner.getValue();
         var ratioWidth = (int) widthSpinner.getValue();
+
+        var changed = borderSize != properties.getBorderSize()
+                || borderColor != properties.getBorderColor()
+                || ratioHeight != properties.getAspectRatioHeight()
+                || ratioWidth != properties.getAspectRatioWidth();
 
         properties.setBorderSize(borderSize);
         properties.setBorderColor(borderColor);
@@ -52,6 +57,8 @@ public class PropertiesPanel extends javax.swing.JPanel {
 
         var node = mOptions.getPreferences().node(properties.getId().toString());
         node.putLong("lastChanged", System.currentTimeMillis());
+
+        return changed;
     }
 
     public void load(CollageProperties properties) {

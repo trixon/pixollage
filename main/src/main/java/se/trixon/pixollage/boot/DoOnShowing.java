@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2025 Patrik Karlström <patrik@trixon.se>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,9 +44,9 @@ public class DoOnShowing implements Runnable {
             }
         });
 
-        SwingHelper.runLaterDelayed(10, () -> {
-            var windowManager = WindowManager.getDefault();
-            Almond.setFrame((JFrame) windowManager.getMainWindow());
+        var windowManager = WindowManager.getDefault();
+        Almond.setFrame((JFrame) windowManager.getMainWindow());
+        SwingHelper.runLaterDelayed(100, () -> {
             var editorMode = windowManager.findMode("editor");
 
             if (windowManager.getOpenedTopComponents(editorMode).length == 0) {

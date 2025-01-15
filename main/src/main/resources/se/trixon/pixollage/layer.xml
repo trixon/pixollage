@@ -25,6 +25,9 @@ limitations under the License.
                 <attr name="noIconInMenu" boolvalue="true"/>
             </file>
         </folder>
+        <folder name="System">
+            <file name="org-openide-actions-SaveAsAction.instance_hidden"/>
+        </folder>
     </folder>
     <folder name="Menu">
         <folder name="Collage">
@@ -84,7 +87,7 @@ limitations under the License.
         <file name="D-S.shadow">
             <attr name="originalFile" stringvalue="Actions/System/org-openide-actions-SaveAction.instance"/>
         </file>
-        <file name="DS-S.shadow">
+        <file name="D-L.shadow">
             <attr name="originalFile" stringvalue="Actions/System/org-openide-actions-SaveAllAction.instance"/>
         </file>
     </folder>

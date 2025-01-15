@@ -16,33 +16,45 @@
 package se.trixon.pixollage.actions;
 
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.Exceptions;
 import org.openide.util.NbBundle.Messages;
+import se.trixon.almond.util.Dict;
+import se.trixon.pixollage.Pixollage;
 import se.trixon.pixollage.collage.Collage;
 
 @ActionID(
-        category = "Collage",
-        id = "se.trixon.pixollage.actions.AddAction"
+        category = "File",
+        id = "se.trixon.pixollage.actions.SaveAsAction"
 )
 @ActionRegistration(
-        displayName = "#CTL_AddAction"
+        displayName = "#CTL_SaveAsAction"
 )
 @ActionReferences({
-    @ActionReference(path = "Menu/Collage", position = 100),
-    @ActionReference(path = "Shortcuts", name = "D-INSERT")
+    @ActionReference(path = "Menu/File", position = 1650),
+    @ActionReference(path = "Shortcuts", name = "DS-S")
 })
-@Messages("CTL_AddAction=Add image(s)...")
-public final class AddAction extends BaseCollageAction {
+@Messages("CTL_SaveAsAction=Save as...")
+public final class SaveAsAction extends BaseCollageAction {
 
-    public AddAction(Collage context) {
+    public SaveAsAction(Collage context) {
         mContext = context;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        mContext.showAddImageDialog();
+        try {
+            var file = Pixollage.requestFile(Dict.SAVE_AS.toString());
+
+            if (file != null) {
+                mContext.save(file);
+            }
+        } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
+        }
     }
 }

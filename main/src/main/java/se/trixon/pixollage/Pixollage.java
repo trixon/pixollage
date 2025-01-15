@@ -19,6 +19,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.awt.Color;
 import java.io.File;
+import org.openide.filesystems.FileChooserBuilder;
+import se.trixon.almond.nbp.Almond;
+import se.trixon.almond.nbp.FileChooserHelper;
 import se.trixon.almond.util.GlobalState;
 import se.trixon.almond.util.gson_adapter.AwtColorAdapter;
 import se.trixon.almond.util.gson_adapter.FileAdapter;
@@ -47,6 +50,21 @@ public class Pixollage {
 
     public static int getIconSizeToolBar() {
         return SwingHelper.getUIScaled(ICON_SIZE_TOOLBAR);
+    }
+
+    public static File requestFile(String title) {
+        var defaultExt = "pxl";
+        var file = new FileChooserBuilder(Pixollage.class)
+                .addFileFilter(PxlDataObject.FILE_NAME_EXTENSION_FILTER)
+                .setFileFilter(PxlDataObject.FILE_NAME_EXTENSION_FILTER)
+                .setFileHiding(true)
+                .setTitle(title)
+                .setSelectionApprover(FileChooserHelper.getFileExistSelectionApprover(Almond.getFrame(), defaultExt))
+                .showSaveDialog();
+
+        file = FileChooserHelper.addExtIfMissing(file, defaultExt);
+
+        return file;
     }
 
 }

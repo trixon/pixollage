@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2025 Patrik Karlström <patrik@trixon.se>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,7 @@
 package se.trixon.pixollage;
 
 import java.io.IOException;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.MIMEResolver;
 import org.openide.loaders.DataObject;
@@ -42,6 +43,8 @@ import se.trixon.pixollage.actions.OpenAction;
         position = 1
 )
 public class PxlDataObject extends MultiDataObject {
+
+    public static final FileNameExtensionFilter FILE_NAME_EXTENSION_FILTER = new FileNameExtensionFilter("Pixollage", "pxl", "PXL");
 
     public PxlDataObject(FileObject fileObject, MultiFileLoader loader) throws DataObjectExistsException, IOException {
         super(fileObject, loader);

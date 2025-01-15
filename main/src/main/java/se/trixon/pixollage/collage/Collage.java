@@ -23,6 +23,9 @@ import javax.swing.border.EmptyBorder;
 import org.apache.commons.io.FileUtils;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
+import org.openide.awt.StatusDisplayer;
+import org.openide.filesystems.FileObject;
+import org.openide.filesystems.FileUtil;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.swing.SwingHelper;
 import se.trixon.pixollage.Pixollage;
@@ -36,23 +39,33 @@ import se.trixon.pixollage.ui.RenderPanel;
  */
 public class Collage {
 
+    private static int sDocumentCounter;
+
+    private transient FileObject mFileObject;
     private transient String mName;
     @SerializedName("header")
     private final CollageProperties mProperties = new CollageProperties();
     private transient final PropertiesPanel mPropertiesPanel = new PropertiesPanel();
     private transient final RenderPanel mRenderPanel = new RenderPanel();
-    private transient final CollageTopComponent mTopComponent;
+    private transient CollageTopComponent mTopComponent;
 
-    public Collage(CollageTopComponent tc) {
-        mTopComponent = tc;
+    public Collage() {
         mPropertiesPanel.setBorder(new EmptyBorder(SwingHelper.getUIScaledInsets(8)));
+        mName = "%s #%d".formatted("Collage", ++sDocumentCounter);
     }
 
     public void clear() {
         System.out.println("Clearing " + mName);
+//        markDirty();
+        mTopComponent.resetSavable();
+//        DataObject.getRegistry().getModified();
     }
 
     public BufferedImage generateImage(int w, int h) {
+        if (w < 1 || h < 1) {
+            return null;
+        }
+
         var image = new BufferedImage(w, h, BufferedImage.TYPE_3BYTE_BGR);
         var g2 = image.createGraphics();
         g2.setPaint(mProperties.getBorderColor());
@@ -62,6 +75,18 @@ public class Collage {
         g2.dispose();
 
         return image;
+    }
+
+    public File getFile() {
+        try {
+            return new File(mFileObject.getPath());
+        } catch (NullPointerException e) {
+            return null;
+        }
+    }
+
+    public FileObject getFileObject() {
+        return mFileObject;
     }
 
     public String getName() {
@@ -74,14 +99,31 @@ public class Collage {
 
     public void save(File file) throws IOException {
         FileUtils.write(file, Pixollage.GSON.toJson(this), "utf-8");
+
+        var fileObject = FileUtil.toFileObject(FileUtil.normalizeFile(file));
+        setFileObject(fileObject);
+
+        mTopComponent.refreshNames();
+        mTopComponent.resetSavable();
+        StatusDisplayer.getDefault().setStatusText("%s %s.".formatted(file.getName(), "SAVED"));
     }
 
-    public void setName(String name) {
-        mName = name;
+    public void setFileObject(FileObject fileObject) {
+        mFileObject = fileObject;
+        mName = mFileObject.getName();
+        sDocumentCounter--;
+    }
+
+//    public void setName(String name) {
+//        mName = name;
+//    }
+    public void setTopComponent(CollageTopComponent topComponent) {
+        mTopComponent = topComponent;
     }
 
     public void showAddImageDialog() {
         System.out.println("Add " + mName);
+        markDirty();
     }
 
     public void showPropertiesDialog() {
@@ -97,7 +139,9 @@ public class Collage {
         );
 
         if (DialogDisplayer.getDefault().notify(d) == NotifyDescriptor.OK_OPTION) {
-            mPropertiesPanel.apply(mProperties);
+            if (mPropertiesPanel.apply(mProperties)) {
+                markDirty();
+            }
         }
     }
 
@@ -117,6 +161,9 @@ public class Collage {
             mRenderPanel.apply(mProperties);
             System.out.println("TODO: Save document and the actual rendering");
         }
+    }
 
+    private void markDirty() {
+        mTopComponent.modify();
     }
 }
