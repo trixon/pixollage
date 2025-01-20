@@ -76,7 +76,7 @@ public final class OpenAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        var file = new FileChooserBuilder(getClass())
+        var file = new FileChooserBuilder(OpenAction.class)
                 .addFileFilter(PxlDataObject.FILE_NAME_EXTENSION_FILTER)
                 .setFileFilter(PxlDataObject.FILE_NAME_EXTENSION_FILTER)
                 .setControlButtonsAreShown(true)

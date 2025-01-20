@@ -16,11 +16,14 @@
 package se.trixon.pixollage.actions;
 
 import java.awt.event.ActionEvent;
+import java.util.Arrays;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
+import org.openide.filesystems.FileChooserBuilder;
 import org.openide.util.NbBundle.Messages;
+import se.trixon.pixollage.Pixollage;
 import se.trixon.pixollage.collage.Collage;
 
 @ActionID(
@@ -43,6 +46,16 @@ public final class AddAction extends BaseCollageAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        mContext.showAddImageDialog();
+        var files = new FileChooserBuilder(AddAction.class)
+                .addFileFilter(Pixollage.PHOTO_FILE_NAME_EXTENSION_FILTER)
+                .setFileFilter(Pixollage.PHOTO_FILE_NAME_EXTENSION_FILTER)
+                .setControlButtonsAreShown(true)
+                .setFileHiding(true)
+                .setFilesOnly(true)
+                .showMultiOpenDialog();
+
+        if (files != null) {
+            mContext.addFiles(Arrays.asList(files));
+        }
     }
 }

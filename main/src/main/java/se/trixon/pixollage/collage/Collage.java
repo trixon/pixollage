@@ -19,8 +19,11 @@ import com.google.gson.annotations.SerializedName;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import javax.swing.border.EmptyBorder;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.StatusDisplayer;
@@ -29,6 +32,8 @@ import org.openide.filesystems.FileUtil;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.swing.SwingHelper;
 import se.trixon.pixollage.Pixollage;
+import se.trixon.pixollage.PxlDataObject;
+import se.trixon.pixollage.actions.OpenAction;
 import se.trixon.pixollage.ui.CollageTopComponent;
 import se.trixon.pixollage.ui.PropertiesPanel;
 import se.trixon.pixollage.ui.RenderPanel;
@@ -52,6 +57,30 @@ public class Collage {
     public Collage() {
         mPropertiesPanel.setBorder(new EmptyBorder(SwingHelper.getUIScaledInsets(8)));
         mName = "%s #%d".formatted("Collage", ++sDocumentCounter);
+    }
+
+    public void addFiles(List<File> files) {
+        //add one or more images, clac checksum and store rotatded thumbnail in cache
+        //add Photo.java object to list, with checksum, path dim orientation etc.
+        files = files.stream()
+                .filter(f -> {
+                    if (StringUtils.equalsAnyIgnoreCase(FilenameUtils.getExtension(f.getName()), PxlDataObject.FILE_NAME_EXTENSION_FILTER.getExtensions())) {
+                        OpenAction.open(FileUtil.toFileObject(FileUtil.normalizeFile(f)));
+                    }
+                    return true;
+                })
+                .filter(f -> StringUtils.equalsAnyIgnoreCase(FilenameUtils.getExtension(f.getName()), Pixollage.SUPPORTED_IMAGE_EXT))
+                .toList();
+
+        if (files.isEmpty()) {
+            return;
+        }
+
+        for (File file : files) {
+            System.out.println("add: " + file);
+        }
+
+        markDirty();
     }
 
     public void clear() {
@@ -114,16 +143,8 @@ public class Collage {
         sDocumentCounter--;
     }
 
-//    public void setName(String name) {
-//        mName = name;
-//    }
     public void setTopComponent(CollageTopComponent topComponent) {
         mTopComponent = topComponent;
-    }
-
-    public void showAddImageDialog() {
-        System.out.println("Add " + mName);
-        markDirty();
     }
 
     public void showPropertiesDialog() {

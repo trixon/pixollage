@@ -19,6 +19,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.awt.Color;
 import java.io.File;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import org.openide.filesystems.FileChooserBuilder;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.nbp.FileChooserHelper;
@@ -41,7 +42,8 @@ public class Pixollage {
             .registerTypeAdapter(File.class, new FileAdapter())
             .create();
     public static final int ICON_SIZE_TOOLBAR = 32;
-
+    public static final FileNameExtensionFilter PHOTO_FILE_NAME_EXTENSION_FILTER = new FileNameExtensionFilter("Photo", "jpg", "png");
+    public static final String[] SUPPORTED_IMAGE_EXT = {"jpg", "png"};
     private static final GlobalState sGlobalState = new GlobalState();
 
     public static GlobalState getGlobalState() {

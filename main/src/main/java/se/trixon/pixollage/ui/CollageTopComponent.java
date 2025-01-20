@@ -16,8 +16,14 @@
 package se.trixon.pixollage.ui;
 
 import java.awt.BorderLayout;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDropEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import javax.swing.JButton;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -55,13 +61,14 @@ public final class CollageTopComponent extends TopComponent {
 
     public CollageTopComponent() {
         initComponents();
+        initDragAndDrop();
         mCollage = new Collage();
         collageTopComponent();
-        modify();
     }
 
     public CollageTopComponent(Collage collage) {
         initComponents();
+        initDragAndDrop();
         mCollage = collage;
         collageTopComponent();
     }
@@ -200,6 +207,24 @@ public final class CollageTopComponent extends TopComponent {
 
         mCollagePanel.setLayout(null);
         add(mCollagePanel, BorderLayout.CENTER);
+    }
+
+    private void initDragAndDrop() {
+        var dropTarget = new DropTarget() {
+            @Override
+            public synchronized void drop(DropTargetDropEvent evt) {
+                evt.acceptDrop(DnDConstants.ACTION_COPY);
+                try {
+                    @SuppressWarnings("unchecked")
+                    var files = (List<File>) evt.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+                    mCollage.addFiles(files);
+                } catch (UnsupportedFlavorException | IOException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+            }
+        };
+
+        setDropTarget(dropTarget);
     }
 
     private boolean isDirty() {
