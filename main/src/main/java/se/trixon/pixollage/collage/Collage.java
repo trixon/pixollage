@@ -57,7 +57,7 @@ public class Collage {
     public void clear() {
         System.out.println("Clearing " + mName);
 //        markDirty();
-        mTopComponent.resetSavable();
+        mTopComponent.removeSavable();
 //        DataObject.getRegistry().getModified();
     }
 
@@ -104,7 +104,7 @@ public class Collage {
         setFileObject(fileObject);
 
         mTopComponent.refreshNames();
-        mTopComponent.resetSavable();
+        mTopComponent.removeSavable();
         StatusDisplayer.getDefault().setStatusText("%s %s.".formatted(file.getName(), "SAVED"));
     }
 
