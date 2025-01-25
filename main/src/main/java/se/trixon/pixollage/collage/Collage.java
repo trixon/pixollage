@@ -53,6 +53,7 @@ public class Collage {
     private transient final PropertiesPanel mPropertiesPanel = new PropertiesPanel();
     private transient final RenderPanel mRenderPanel = new RenderPanel();
     private transient CollageTopComponent mTopComponent;
+    private transient final CacheManager mCacheManager = CacheManager.getInstance();
 
     public Collage() {
         mPropertiesPanel.setBorder(new EmptyBorder(SwingHelper.getUIScaledInsets(8)));
@@ -60,8 +61,6 @@ public class Collage {
     }
 
     public void addFiles(List<File> files) {
-        //add one or more images, clac checksum and store rotatded thumbnail in cache
-        //add Photo.java object to list, with checksum, path dim orientation etc.
         files = files.stream()
                 .filter(f -> {
                     if (StringUtils.equalsAnyIgnoreCase(FilenameUtils.getExtension(f.getName()), PxlDataObject.FILE_NAME_EXTENSION_FILTER.getExtensions())) {
@@ -75,9 +74,10 @@ public class Collage {
         if (files.isEmpty()) {
             return;
         }
-
-        for (File file : files) {
+        for (var file : files) {
             System.out.println("add: " + file);
+            var photo = new Photo(file);
+            mCacheManager.addIfMissing(photo);
         }
 
         markDirty();
