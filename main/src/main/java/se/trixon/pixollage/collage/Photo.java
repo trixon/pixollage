@@ -20,12 +20,14 @@ import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.MetadataException;
 import com.drew.metadata.exif.ExifIFD0Directory;
 import com.drew.metadata.exif.ExifSubIFDDirectory;
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.openide.util.Exceptions;
+import se.trixon.almond.util.GraphicsHelper;
 
 /**
  *
@@ -36,11 +38,17 @@ public class Photo {
     private String mChecksum;
     private final File mFile;
     private int mOrientation;
+    private Dimension mOriginalDimension = new Dimension(1, 1);
     private BufferedImage mThumbnailBufferedImage;
+    private Aspect mAspect;
 
     public Photo(File file) {
         mFile = file;
         initMetadata();
+    }
+
+    public Aspect getAspect() {
+        return mAspect;
     }
 
     public String getChecksum() {
@@ -61,6 +69,10 @@ public class Photo {
 
     public int getOrientation() {
         return mOrientation;
+    }
+
+    public Dimension getOriginalDimension() {
+        return mOriginalDimension;
     }
 
     public BufferedImage getThumbnailBufferedImage() {
@@ -91,5 +103,29 @@ public class Photo {
         } catch (MetadataException | NullPointerException | ImageProcessingException | IOException ex) {
             mOrientation = 1;
         }
+
+        try {
+            mOriginalDimension = GraphicsHelper.getImgageDimension(mFile);
+            if (mOrientation == 6 || mOrientation == 8) {
+                mOriginalDimension = new Dimension(mOriginalDimension.height, mOriginalDimension.width);
+            }
+        } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+
+        var h = mOriginalDimension.height;
+        var w = mOriginalDimension.width;
+
+        var aspect = Aspect.SQUARE;
+        if (h > w) {
+            aspect = Aspect.PORTRAIT;
+        } else if (w > h) {
+            aspect = Aspect.LANDSCAPE;
+        }
+        mAspect = aspect;
+    }
+
+    public enum Aspect {
+        PORTRAIT, LANDSCAPE, SQUARE;
     }
 }

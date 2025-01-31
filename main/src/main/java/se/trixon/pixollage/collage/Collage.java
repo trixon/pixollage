@@ -74,10 +74,16 @@ public class Collage {
         if (files.isEmpty()) {
             return;
         }
+
         for (var file : files) {
             System.out.println("add: " + file);
             var photo = new Photo(file);
             mCacheManager.addIfMissing(photo);
+            System.out.println("\t" + photo.getThumbnailName());
+            System.out.println("\t" + photo.getOrientation());
+            System.out.println("\t" + photo.getOriginalDimension());
+            System.out.println("\t" + photo.getAspect());
+            System.out.println("");
         }
 
         markDirty();
