@@ -36,6 +36,7 @@ import se.trixon.pixollage.Pixollage;
 import se.trixon.pixollage.PxlDataObject;
 import se.trixon.pixollage.actions.OpenAction;
 import se.trixon.pixollage.cli.Engine;
+import se.trixon.pixollage.cli.Photo;
 import se.trixon.pixollage.ui.CollageTopComponent;
 import se.trixon.pixollage.ui.PropertiesPanel;
 import se.trixon.pixollage.ui.RenderPanel;
@@ -50,13 +51,14 @@ public class Collage {
     private transient final CacheManager mCacheManager = CacheManager.getInstance();
     private transient final Engine mEngine = Engine.getInstance();
     private transient FileObject mFileObject;
+    private transient final ArrayList<File> mFiles = new ArrayList<>();
     private transient String mName;
+    private transient List<Photo> mPhotos;
     @SerializedName("header")
     private final CollageProperties mProperties = new CollageProperties();
     private transient final PropertiesPanel mPropertiesPanel = new PropertiesPanel();
     private transient final RenderPanel mRenderPanel = new RenderPanel();
     private transient CollageTopComponent mTopComponent;
-    private transient final ArrayList<File> mFiles = new ArrayList<>();
 
     public Collage() {
         mPropertiesPanel.setBorder(new EmptyBorder(SwingHelper.getUIScaledInsets(8)));
@@ -80,8 +82,8 @@ public class Collage {
 
         mFiles.addAll(files);
 
-        var photos = mEngine.generatePhotoList(mFiles);
-        for (var photo : photos) {
+        mPhotos = mEngine.generatePhotoList(mFiles);
+        for (var photo : mPhotos) {
             photo.print();
             System.out.println("\t" + photo.getThumbnailName());
 
@@ -99,6 +101,7 @@ public class Collage {
 //        DataObject.getRegistry().getModified();
     }
 
+    @Deprecated
     public BufferedImage generateImage(int w, int h) {
         if (w < 1 || h < 1) {
             return null;
@@ -189,11 +192,16 @@ public class Collage {
 
         if (DialogDisplayer.getDefault().notify(d) == Dict.RENDER.toString()) {
             mRenderPanel.apply(mProperties);
-            System.out.println("TODO: Save document and the actual rendering");
+            var file = mProperties.getRenderPath();
+            if (file != null && !file.isDirectory()) {
+                mEngine.write(file);
+            }
         }
     }
 
     private void markDirty() {
+        mEngine.createCollage(mPhotos, mProperties.asSettings());
+
         mTopComponent.modify();
     }
 }

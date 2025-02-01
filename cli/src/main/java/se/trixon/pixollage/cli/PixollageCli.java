@@ -44,7 +44,7 @@ public class PixollageCli implements Runnable {
     @Option(names = {"-c", "--border-color"}, description = "Border color", converter = ColorConverter.class)
     Color borderColor = Color.BLACK;
     @Option(names = {"-s", "--border-size"}, description = "Border size in percent")
-    int borderSize = 1;
+    double borderSize = 1.0;
     @Option(names = {"-h", "--height"}, description = "Height of collage in pixels")
     int height = 1080;
     @Option(names = {"-o", "--out"}, description = "Target file", required = true)
@@ -98,6 +98,9 @@ public class PixollageCli implements Runnable {
             return;
         }
 
+        var settings = new Settings(borderColor, borderSize, width, height);
+        mEngine.createCollage(photos, settings);
+        mEngine.write(out);
     }
 
     private List<File> generatePhotoFileList() {

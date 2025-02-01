@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2025 Patrik Karlström <patrik@trixon.se>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,7 +36,7 @@ public class RenderPanel extends javax.swing.JPanel {
     }
 
     public void apply(CollageProperties properties) {
-
+        properties.setRenderPath(fileChooserPanel.getFile());
     }
 
     public void load(CollageProperties properties) {

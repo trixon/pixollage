@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2025 Patrik Karlström <patrik@trixon.se>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,6 +21,7 @@ import java.io.File;
 import java.util.UUID;
 import se.trixon.pixollage.Options;
 import static se.trixon.pixollage.Options.*;
+import se.trixon.pixollage.cli.Settings;
 
 /**
  *
@@ -47,6 +48,10 @@ public class CollageProperties {
     private int mRenderWidth = 1920;
 
     public CollageProperties() {
+    }
+
+    public Settings asSettings() {
+        return new Settings(mBorderColor, mBorderSize, 300, 200);//TODO
     }
 
     public void calculateRenderHeight() {

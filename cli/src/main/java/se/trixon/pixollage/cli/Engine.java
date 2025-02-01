@@ -15,13 +15,16 @@
  */
 package se.trixon.pixollage.cli;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.function.Predicate;
+import javax.imageio.ImageIO;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -30,6 +33,7 @@ import org.apache.commons.lang3.StringUtils;
 public class Engine {
 
     public static final String[] SUPPORTED_IMAGE_EXT = {"jpg", "png"};
+    private BufferedImage mImage;
     private final Predicate<File> mImageFileExtPredicate = f -> StringUtils.equalsAnyIgnoreCase(FilenameUtils.getExtension(f.getName()), Engine.SUPPORTED_IMAGE_EXT);
 
     public static Engine getInstance() {
@@ -37,6 +41,15 @@ public class Engine {
     }
 
     private Engine() {
+    }
+
+    public void createCollage(List<Photo> photos, Settings settings) {
+        int w = settings.width();
+        int h = settings.height();
+        mImage = new BufferedImage(w, h, BufferedImage.TYPE_3BYTE_BGR);
+        var g2 = mImage.createGraphics();
+        g2.setPaint(settings.borderColor());
+        g2.fillRect(0, 0, w, h);
     }
 
     public List<Photo> generatePhotoList(List<File> files) {
@@ -53,6 +66,15 @@ public class Engine {
             return true;
         } catch (IOException e) {
             return false;
+        }
+    }
+
+    public void write(File file) {
+        try {
+            var extension = FilenameUtils.getExtension(file.getName());
+            ImageIO.write(mImage, extension, file);
+        } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
         }
     }
 
