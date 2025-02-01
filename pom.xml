@@ -22,7 +22,7 @@
     <modules>
         <module>branding</module>
         <module>application</module>
-        <module>engine</module>
+        <module>cli</module>
         <module>main</module>
     </modules>
 </project>

@@ -43,7 +43,6 @@ public class Pixollage {
             .create();
     public static final int ICON_SIZE_TOOLBAR = 32;
     public static final FileNameExtensionFilter PHOTO_FILE_NAME_EXTENSION_FILTER = new FileNameExtensionFilter("Photo", "jpg", "png");
-    public static final String[] SUPPORTED_IMAGE_EXT = {"jpg", "png"};
     private static final GlobalState sGlobalState = new GlobalState();
 
     public static GlobalState getGlobalState() {

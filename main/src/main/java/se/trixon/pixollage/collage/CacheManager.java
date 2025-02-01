@@ -15,6 +15,7 @@
  */
 package se.trixon.pixollage.collage;
 
+import se.trixon.pixollage.cli.Photo;
 import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;

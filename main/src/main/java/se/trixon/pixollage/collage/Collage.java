@@ -19,6 +19,7 @@ import com.google.gson.annotations.SerializedName;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.border.EmptyBorder;
 import org.apache.commons.io.FileUtils;
@@ -34,6 +35,7 @@ import se.trixon.almond.util.swing.SwingHelper;
 import se.trixon.pixollage.Pixollage;
 import se.trixon.pixollage.PxlDataObject;
 import se.trixon.pixollage.actions.OpenAction;
+import se.trixon.pixollage.cli.Engine;
 import se.trixon.pixollage.ui.CollageTopComponent;
 import se.trixon.pixollage.ui.PropertiesPanel;
 import se.trixon.pixollage.ui.RenderPanel;
@@ -45,7 +47,8 @@ import se.trixon.pixollage.ui.RenderPanel;
 public class Collage {
 
     private static int sDocumentCounter;
-
+    private transient final CacheManager mCacheManager = CacheManager.getInstance();
+    private transient final Engine mEngine = Engine.getInstance();
     private transient FileObject mFileObject;
     private transient String mName;
     @SerializedName("header")
@@ -53,7 +56,7 @@ public class Collage {
     private transient final PropertiesPanel mPropertiesPanel = new PropertiesPanel();
     private transient final RenderPanel mRenderPanel = new RenderPanel();
     private transient CollageTopComponent mTopComponent;
-    private transient final CacheManager mCacheManager = CacheManager.getInstance();
+    private transient final ArrayList<File> mFiles = new ArrayList<>();
 
     public Collage() {
         mPropertiesPanel.setBorder(new EmptyBorder(SwingHelper.getUIScaledInsets(8)));
@@ -68,22 +71,21 @@ public class Collage {
                     }
                     return true;
                 })
-                .filter(f -> StringUtils.equalsAnyIgnoreCase(FilenameUtils.getExtension(f.getName()), Pixollage.SUPPORTED_IMAGE_EXT))
+                .filter(mEngine.getImageFileExtPredicate())
                 .toList();
 
         if (files.isEmpty()) {
             return;
         }
 
-        for (var file : files) {
-            System.out.println("add: " + file);
-            var photo = new Photo(file);
-            mCacheManager.addIfMissing(photo);
+        mFiles.addAll(files);
+
+        var photos = mEngine.generatePhotoList(mFiles);
+        for (var photo : photos) {
+            photo.print();
             System.out.println("\t" + photo.getThumbnailName());
-            System.out.println("\t" + photo.getOrientation());
-            System.out.println("\t" + photo.getOriginalDimension());
-            System.out.println("\t" + photo.getAspect());
-            System.out.println("");
+
+            mCacheManager.addIfMissing(photo);
         }
 
         markDirty();
@@ -91,6 +93,7 @@ public class Collage {
 
     public void clear() {
         System.out.println("Clearing " + mName);
+        mFiles.clear();
 //        markDirty();
         mTopComponent.removeSavable();
 //        DataObject.getRegistry().getModified();

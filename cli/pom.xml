@@ -8,15 +8,24 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>engine</artifactId>
+    <artifactId>cli</artifactId>
     <packaging>jar</packaging>
     <description>Pixollage engine and cli</description>
 
     <dependencies>
         <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-util</artifactId>
+        </dependency>
+        <dependency>
             <groupId>info.picocli</groupId>
             <artifactId>picocli</artifactId>
             <version>4.7.6</version>
+        </dependency>
+        <dependency>
+            <groupId>com.drewnoakes</groupId>
+            <artifactId>metadata-extractor</artifactId>
+            <version>2.19.0</version>
         </dependency>
         <dependency>
             <groupId>se.trixon.almond</groupId>
@@ -41,9 +50,10 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.4.2</version>
                 <configuration>
+                    <finalName>pixollage-cli</finalName>
                     <archive>
                         <manifest>
-                            <mainClass>se.trixon.pixollage.engine.PixollageCli</mainClass>
+                            <mainClass>se.trixon.pixollage.cli.PixollageCli</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -78,6 +88,7 @@
                                         <exclude>se/trixon/util/icon/**</exclude>
                                         <exclude>se/trixon/util/icons/**</exclude>
                                         <exclude>se/trixon/util/swing/**</exclude>
+                                        <exclude>se/trixon/util/fx/**</exclude>
                                     </excludes>
                                 </filter>
                             </filters>
@@ -85,11 +96,21 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <compilerArgs>
+                        <arg>-Xlint</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
     <properties>
         <netbeans.hint.license>apache20</netbeans.hint.license>
-        <exec.mainClass>se.trixon.pixollage.engine.PixollageCli</exec.mainClass>
+        <exec.mainClass>se.trixon.pixollage.cli.PixollageCli</exec.mainClass>
     </properties>
 </project>

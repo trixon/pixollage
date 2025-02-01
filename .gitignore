@@ -29,3 +29,5 @@ replay_pid*
 /mavenproject3/target/
 /engine/target/
 /engine/dependency-reduced-pom.xml
+/cli/target/
+/cli/dependency-reduced-pom.xml

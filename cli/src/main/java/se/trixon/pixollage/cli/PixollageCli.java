@@ -13,10 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.trixon.pixollage.engine;
+package se.trixon.pixollage.cli;
 
 import java.awt.Color;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.lang3.StringUtils;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
@@ -26,7 +32,7 @@ import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 import picocli.CommandLine.PicocliException;
 import se.trixon.almond.util.PomInfo;
-import se.trixon.pixollage.engine.PixollageCli.VersionProvider;
+import se.trixon.pixollage.cli.PixollageCli.VersionProvider;
 
 /**
  *
@@ -35,22 +41,23 @@ import se.trixon.pixollage.engine.PixollageCli.VersionProvider;
 @Command(name = "pixollage-cli", versionProvider = VersionProvider.class, mixinStandardHelpOptions = true)
 public class PixollageCli implements Runnable {
 
-    @Option(names = {"-c", "--border-color"}, description = "Collage border color", converter = ColorConverter.class)
+    @Option(names = {"-c", "--border-color"}, description = "Border color", converter = ColorConverter.class)
     Color borderColor = Color.BLACK;
-    @Option(names = {"-s", "--border-size"}, description = "Collage border size")
+    @Option(names = {"-s", "--border-size"}, description = "Border size in percent")
     int borderSize = 1;
-    @Option(names = {"-h", "--height"}, description = "Collage height")
+    @Option(names = {"-h", "--height"}, description = "Height of collage in pixels")
     int height = 1080;
     @Option(names = {"-o", "--out"}, description = "Target file", required = true)
     File out;
-    @Option(names = {"?", "--help"}, usageHelp = true, description = "display this help message")
+    @Option(names = {"--help"}, usageHelp = true, description = "display this help message")
     boolean usageHelpRequested;
     @Option(names = {"--version"}, versionHelp = true, description = "display version info")
     boolean versionInfoRequested;
-    @Option(names = {"-cw", "--width"}, description = "Collage width")
+    @Option(names = {"-w", "--width"}, description = "Width of collage in pixels")
     int width = 1600;
-    @Parameters(arity = "1..*", paramLabel = "<photo>", description = "Photos to be included in the collage.")
-    private File[] files;
+    @Parameters(arity = "1..*", paramLabel = "<FILE>", description = "Photos to be included in the collage")
+    private ArrayList<File> files;
+    private final Engine mEngine = Engine.getInstance();
 
     public static void main(String[] args) {
         var commandLine = new CommandLine(new PixollageCli());
@@ -73,15 +80,46 @@ public class PixollageCli implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("DO STUFF");
-        System.out.println(this.borderColor);
-        System.out.println(this.borderSize);
-        System.out.println(this.height);
-        System.out.println(this.width);
-        System.out.println(this.out);
-        for (var file : files) {
-            System.out.println(file);
+        out = out.getAbsoluteFile();
+
+        if (!mEngine.isValidForWrite(out)) {
+            System.out.println("Invalid path or insufficient rights for: " + out);
+            return;
         }
+        var photoFiles = generatePhotoFileList();
+        var photos = mEngine.generatePhotoList(photoFiles);
+
+        for (var photo : photos) {
+            photo.print();
+        }
+
+        if (photos.size() < 2) {
+            System.out.println("%d photo(s) is not enough to generate a collage".formatted(photos.size()));
+            return;
+        }
+
+    }
+
+    private List<File> generatePhotoFileList() {
+        var sourceFiles = new ArrayList<File>();
+        for (var file : files) {
+            if (file.isFile()) {
+                sourceFiles.add(file.getAbsoluteFile());
+            } else if (file.isDirectory()) {
+                try {
+                    var subFiles = Files.list(file.toPath()).map(p -> p.toFile().getAbsoluteFile()).filter(f -> f.isFile()).toList();
+                    sourceFiles.addAll(subFiles);
+                } catch (IOException ex) {
+                    Logger.getLogger(PixollageCli.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        var imageFiles = sourceFiles.stream()
+                .filter(mEngine.getImageFileExtPredicate())
+                .sorted()
+                .toList();
+
+        return imageFiles;
     }
 
     static class ColorConverter implements ITypeConverter<Color> {
@@ -101,7 +139,7 @@ public class PixollageCli implements Runnable {
         @Override
         public String[] getVersion() throws Exception {
             var c = PixollageCli.class;
-            var pomInfo = new PomInfo(c, "se.trixon.pixollage", "engine");
+            var pomInfo = new PomInfo(c, "se.trixon.pixollage", "cli");
 
             return new String[]{
                 "pixollage-cli  version %s".formatted(pomInfo.getVersion()),
@@ -120,6 +158,5 @@ public class PixollageCli implements Runnable {
                                 """
             };
         }
-
     }
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.trixon.pixollage.collage;
+package se.trixon.pixollage.cli;
 
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
@@ -35,12 +35,12 @@ import se.trixon.almond.util.GraphicsHelper;
  */
 public class Photo {
 
+    private Aspect mAspect;
     private String mChecksum;
     private final File mFile;
     private int mOrientation;
     private Dimension mOriginalDimension = new Dimension(1, 1);
     private BufferedImage mThumbnailBufferedImage;
-    private Aspect mAspect;
 
     public Photo(File file) {
         mFile = file;
@@ -83,6 +83,18 @@ public class Photo {
         return "%s.%s".formatted(getChecksum(), FilenameUtils.getExtension(mFile.getName()));
     }
 
+    public boolean isValid() {
+        return mOriginalDimension != null;
+    }
+
+    public void print() {
+        System.out.println(getFile());
+        System.out.println("\t" + getOrientation());
+        System.out.println("\t" + getOriginalDimension());
+        System.out.println("\t" + getAspect());
+        System.out.println("");
+    }
+
     public void setChecksum(String checksum) {
         mChecksum = checksum;
     }
@@ -111,6 +123,11 @@ public class Photo {
             }
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
+        }
+
+        if (mOriginalDimension == null) {
+            System.err.println(new IllegalArgumentException("Invalid file: " + mFile).getMessage());
+            return;
         }
 
         var h = mOriginalDimension.height;
