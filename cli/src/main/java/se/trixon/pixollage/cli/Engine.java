@@ -15,16 +15,20 @@
  */
 package se.trixon.pixollage.cli;
 
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Random;
 import java.util.function.Predicate;
 import javax.imageio.ImageIO;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openide.util.Exceptions;
+import se.trixon.almond.util.GraphicsHelper;
+import se.trixon.almond.util.ImageScaler;
 
 /**
  *
@@ -35,12 +39,23 @@ public class Engine {
     public static final String[] SUPPORTED_IMAGE_EXT = {"jpg", "png"};
     private BufferedImage mImage;
     private final Predicate<File> mImageFileExtPredicate = f -> StringUtils.equalsAnyIgnoreCase(FilenameUtils.getExtension(f.getName()), Engine.SUPPORTED_IMAGE_EXT);
+    private final ImageScaler mImageScaler = ImageScaler.getInstance();
 
     public static Engine getInstance() {
         return Holder.INSTANCE;
     }
 
     private Engine() {
+    }
+
+    public void addPhotos(List<Photo> photos, Settings settings) {
+        for (var photo : photos) {
+            try {
+                addPhoto(photo, settings);
+            } catch (IOException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+        }
     }
 
     public void createCollage(List<Photo> photos, Settings settings) {
@@ -50,6 +65,9 @@ public class Engine {
         var g2 = mImage.createGraphics();
         g2.setPaint(settings.borderColor());
         g2.fillRect(0, 0, w, h);
+        g2.dispose();
+
+        //TODO Calculateimage layout
     }
 
     public List<Photo> generatePhotoList(List<File> files) {
@@ -76,6 +94,28 @@ public class Engine {
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
         }
+    }
+
+    private void addPhoto(Photo photo, Settings settings) throws IOException {
+        var g2 = mImage.createGraphics();
+        var file = photo.getFile();
+        var orientation = photo.getOrientation();
+        int thumbnailSize = 400;
+
+        var scaledImage = mImageScaler.getScaledImage(file, new Dimension(thumbnailSize, thumbnailSize));
+        scaledImage = GraphicsHelper.rotate(scaledImage, orientation);
+
+        var iw = scaledImage.getWidth();
+        var ih = scaledImage.getHeight();
+        var cw = settings.width();
+        var ch = settings.height();
+
+        var random = new Random();
+        var y = random.nextInt(ch - ih);
+        var x = random.nextInt(cw - iw);
+
+        g2.drawImage(scaledImage, x, y, null);
+        g2.dispose();
     }
 
     private static class Holder {

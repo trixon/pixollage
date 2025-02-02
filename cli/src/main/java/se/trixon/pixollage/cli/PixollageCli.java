@@ -100,6 +100,8 @@ public class PixollageCli implements Runnable {
 
         var settings = new Settings(borderColor, borderSize, width, height);
         mEngine.createCollage(photos, settings);
+        mEngine.addPhotos(photos, settings);
+
         mEngine.write(out);
     }
 
