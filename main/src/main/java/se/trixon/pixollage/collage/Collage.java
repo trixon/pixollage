@@ -24,7 +24,7 @@ import java.util.List;
 import javax.swing.border.EmptyBorder;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.StatusDisplayer;
@@ -68,7 +68,7 @@ public class Collage {
     public void addFiles(List<File> files) {
         files = files.stream()
                 .filter(f -> {
-                    if (StringUtils.equalsAnyIgnoreCase(FilenameUtils.getExtension(f.getName()), PxlDataObject.FILE_NAME_EXTENSION_FILTER.getExtensions())) {
+                    if (Strings.CI.equalsAny(FilenameUtils.getExtension(f.getName()), PxlDataObject.FILE_NAME_EXTENSION_FILTER.getExtensions())) {
                         OpenAction.open(FileUtil.toFileObject(FileUtil.normalizeFile(f)));
                     }
                     return true;
