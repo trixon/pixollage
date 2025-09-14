@@ -20,7 +20,7 @@
         <dependency>
             <groupId>info.picocli</groupId>
             <artifactId>picocli</artifactId>
-            <version>4.7.6</version>
+            <version>4.7.7</version>
         </dependency>
         <dependency>
             <groupId>com.drewnoakes</groupId>
@@ -99,7 +99,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.13.0</version>
                 <configuration>
                     <compilerArgs>
                         <arg>-Xlint</arg>
