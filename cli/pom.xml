@@ -83,12 +83,12 @@
                             <minimizeJar>false</minimizeJar>
                             <filters>
                                 <filter>
-                                    <artifact>se.trixon.util:trixon-util</artifact>
+                                    <artifact>se.trixon.almond:almond-util</artifact>
                                     <excludes>
-                                        <exclude>se/trixon/util/icon/**</exclude>
-                                        <exclude>se/trixon/util/icons/**</exclude>
-                                        <exclude>se/trixon/util/swing/**</exclude>
-                                        <exclude>se/trixon/util/fx/**</exclude>
+                                        <exclude>se/trixon/almond/util/icon/**</exclude>
+                                        <exclude>se/trixon/almond/util/icons/**</exclude>
+                                        <exclude>se/trixon/almond/util/swing/**</exclude>
+                                        <exclude>se/trixon/almond/util/fx/**</exclude>
                                     </excludes>
                                 </filter>
                             </filters>
