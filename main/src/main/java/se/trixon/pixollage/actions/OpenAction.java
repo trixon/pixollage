@@ -49,7 +49,7 @@ public final class OpenAction implements ActionListener {
 
     public static void open(FileObject fileObject) {
         try {
-            var collage = Pixollage.GSON.fromJson(fileObject.asText("utf-8"), Collage.class);
+            var collage = Pixollage.JSON.readValue(fileObject.asText("utf-8"), Collage.class);
             collage.setFileObject(fileObject);
 
             var windowManager = WindowManager.getDefault();

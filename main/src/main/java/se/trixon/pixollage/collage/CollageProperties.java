@@ -15,7 +15,7 @@
  */
 package se.trixon.pixollage.collage;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.awt.Color;
 import java.io.File;
 import java.util.UUID;
@@ -30,21 +30,21 @@ import se.trixon.pixollage.cli.Settings;
 public class CollageProperties {
 
     public static final Options OPTIONS = Options.getInstance();
-    @SerializedName("aspectRatioHeight")
+    @JsonProperty("aspectRatioHeight")
     private int mAspectRatioHeight = OPTIONS.getInt(KEY_HEIGHT, DEFAULT_HEIGHT);
-    @SerializedName("aspectRatioWidth")
+    @JsonProperty("aspectRatioWidth")
     private int mAspectRatioWidth = OPTIONS.getInt(KEY_WIDTH, DEFAULT_WIDTH);
-    @SerializedName("borderColor")
+    @JsonProperty("borderColor")
     private Color mBorderColor = Color.decode(OPTIONS.get(KEY_BORDER_COLOR, DEFAULT_BORDER_COLOR));
-    @SerializedName("borderSize")
+    @JsonProperty("borderSize")
     private double mBorderSize = OPTIONS.getDouble(KEY_BORDER_SIZE, DEFAULT_BORDER_SIZE);
-    @SerializedName("uuid")
+    @JsonProperty("uuid")
     private UUID mId = UUID.randomUUID();
-    @SerializedName("renderHeight")
+    @JsonProperty("renderHeight")
     private int mRenderHeight = 1600;
-    @SerializedName("renderPath")
+    @JsonProperty("renderPath")
     private File mRenderPath;
-    @SerializedName("renderWidth")
+    @JsonProperty("renderWidth")
     private int mRenderWidth = 1920;
 
     public CollageProperties() {

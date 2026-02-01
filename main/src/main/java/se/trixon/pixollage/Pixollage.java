@@ -15,8 +15,12 @@
  */
 package se.trixon.pixollage;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import java.awt.Color;
 import java.io.File;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -24,8 +28,8 @@ import org.openide.filesystems.FileChooserBuilder;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.nbp.FileChooserHelper;
 import se.trixon.almond.util.GlobalState;
-import se.trixon.almond.util.gson_adapter.AwtColorAdapter;
-import se.trixon.almond.util.gson_adapter.FileAdapter;
+import se.trixon.almond.util.jackson.AwtColorHexARGBDeserializer;
+import se.trixon.almond.util.jackson.AwtColorHexARGBSerializer;
 import se.trixon.almond.util.swing.SwingHelper;
 
 /**
@@ -34,13 +38,16 @@ import se.trixon.almond.util.swing.SwingHelper;
  */
 public class Pixollage {
 
-    public static final Gson GSON = new GsonBuilder()
-            .setVersion(1.0)
-            .serializeNulls()
-            .setPrettyPrinting()
-            .registerTypeAdapter(Color.class, new AwtColorAdapter())
-            .registerTypeAdapter(File.class, new FileAdapter())
-            .create();
+    public final static JsonMapper JSON = JsonMapper.builder()
+            .enable(SerializationFeature.INDENT_OUTPUT)
+            .addModule(new SimpleModule()
+                    .addSerializer(Color.class, new AwtColorHexARGBSerializer())
+                    .addDeserializer(Color.class, new AwtColorHexARGBDeserializer())
+            )
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .visibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE)
+            .visibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
+            .build();
     public static final int ICON_SIZE_TOOLBAR = 32;
     public static final FileNameExtensionFilter PHOTO_FILE_NAME_EXTENSION_FILTER = new FileNameExtensionFilter("Photo", "jpg", "png");
     private static final GlobalState sGlobalState = new GlobalState();

@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import javax.swing.JButton;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.DialogDescriptor;
@@ -239,7 +238,7 @@ public final class CollageTopComponent extends TopComponent {
     private void loadFromFile(File file) throws IOException {
         mInstanceContent.remove(mCollage);
         var fileObject = FileUtil.createData(file);
-        mCollage = Pixollage.GSON.fromJson(FileUtils.readFileToString(file, "utf-8"), Collage.class);
+        mCollage = Pixollage.JSON.readValue(file, Collage.class);
         mCollage.setFileObject(fileObject);
         collageTopComponent();
     }
