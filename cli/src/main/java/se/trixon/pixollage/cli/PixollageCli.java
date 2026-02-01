@@ -18,12 +18,11 @@ package se.trixon.pixollage.cli;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
+import java.lang.System.Logger;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.ITypeConverter;
@@ -40,6 +39,8 @@ import se.trixon.pixollage.cli.PixollageCli.VersionProvider;
  */
 @Command(name = "pixollage-cli", versionProvider = VersionProvider.class, mixinStandardHelpOptions = true)
 public class PixollageCli implements Runnable {
+
+    private static final System.Logger LOG = System.getLogger(PixollageCli.class.getName());
 
     @Option(names = {"-c", "--border-color"}, description = "Border color", converter = ColorConverter.class)
     Color borderColor = Color.BLACK;
@@ -115,10 +116,11 @@ public class PixollageCli implements Runnable {
                     var subFiles = Files.list(file.toPath()).map(p -> p.toFile().getAbsoluteFile()).filter(f -> f.isFile()).toList();
                     sourceFiles.addAll(subFiles);
                 } catch (IOException ex) {
-                    Logger.getLogger(PixollageCli.class.getName()).log(Level.SEVERE, null, ex);
+                    LOG.log(Logger.Level.ERROR, ex);
                 }
             }
         }
+
         var imageFiles = sourceFiles.stream()
                 .filter(mEngine.getImageFileExtPredicate())
                 .sorted()
@@ -131,7 +133,7 @@ public class PixollageCli implements Runnable {
 
         @Override
         public Color convert(String value) throws Exception {
-            if (!StringUtils.startsWith(value, "#")) {
+            if (!Strings.CS.startsWith(value, "#")) {
                 value = "#" + value;
             }
 

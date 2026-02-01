@@ -25,7 +25,7 @@ import java.util.function.Predicate;
 import javax.imageio.ImageIO;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.GraphicsHelper;
 import se.trixon.almond.util.ImageScaler;
@@ -38,7 +38,7 @@ public class Engine {
 
     public static final String[] SUPPORTED_IMAGE_EXT = {"jpg", "png"};
     private BufferedImage mImage;
-    private final Predicate<File> mImageFileExtPredicate = f -> StringUtils.equalsAnyIgnoreCase(FilenameUtils.getExtension(f.getName()), Engine.SUPPORTED_IMAGE_EXT);
+    private final Predicate<File> mImageFileExtPredicate = f -> Strings.CI.equalsAny(FilenameUtils.getExtension(f.getName()), Engine.SUPPORTED_IMAGE_EXT);
     private final ImageScaler mImageScaler = ImageScaler.getInstance();
 
     public static Engine getInstance() {
