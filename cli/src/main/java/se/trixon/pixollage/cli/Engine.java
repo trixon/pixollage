@@ -21,6 +21,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
 import java.util.function.Predicate;
 import javax.imageio.ImageIO;
 import org.apache.commons.io.FileUtils;
@@ -49,11 +51,19 @@ public class Engine {
     }
 
     public void addPhotos(List<Photo> photos, Settings settings) {
-        for (var photo : photos) {
-            try {
-                addPhoto(photo, settings);
-            } catch (IOException ex) {
-                Exceptions.printStackTrace(ex);
+        var semaphore = new Semaphore(Runtime.getRuntime().availableProcessors() * 2);
+        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            for (var photo : photos) {
+                executor.submit(() -> {
+                    try {
+                        semaphore.acquire();
+                        addPhoto(photo, settings);
+                    } catch (IOException | InterruptedException ex) {
+                        Exceptions.printStackTrace(ex);
+                    } finally {
+                        semaphore.release();
+                    }
+                });
             }
         }
     }
@@ -71,7 +81,10 @@ public class Engine {
     }
 
     public List<Photo> generatePhotoList(List<File> files) {
-        return files.stream().map(f -> new Photo(f)).filter(p -> p.isValid()).toList();
+        return files.stream()
+                .map(f -> new Photo(f))
+                .filter(p -> p.isValid())
+                .toList();
     }
 
     public Predicate<File> getImageFileExtPredicate() {
